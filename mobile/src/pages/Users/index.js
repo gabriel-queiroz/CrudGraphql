@@ -68,7 +68,7 @@ export const UPDATE_USER = gql`
 `;
 
 const Users = () => {
-  const { data, loading } = useQuery(GET_USERS);
+  const { data, loading, refetch } = useQuery(GET_USERS);
   const [deleteUser, { loadingDelete }] = useMutation(DELETE_USER, {
     refetchQueries: [{ query: GET_USERS }]
   });
