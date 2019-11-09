@@ -42,5 +42,6 @@ export const Data = styled.Text``;
 export const List = styled.FlatList.attrs({})``;
 
 export const StatusBar = styled.StatusBar.attrs({
-  barStyle: 'light-content'
+  barStyle: 'light-content',
+  backgroundColor: '#574496'
 })``;
