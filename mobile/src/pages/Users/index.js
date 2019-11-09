@@ -11,7 +11,7 @@ import {
   StatusBar
 } from './styles';
 import gql from 'graphql-tag';
-import { useQuery, useMutation } from 'react-apollo-hooks';
+import { useQuery, useMutation, useSubscription } from 'react-apollo-hooks';
 import ListItem from './ListItem';
 import { push } from '~/services/navigationService';
 import { showMessage } from 'react-native-flash-message';
@@ -31,6 +31,17 @@ const DELETE_USER = gql`
   mutation deleteUser($id: String!) {
     deleteUser(id: $id) {
       id
+    }
+  }
+`;
+
+export const LISTENER_USERS = gql`
+  subscription newUser {
+    newUser {
+      id
+      email
+      firstName
+      lastName
     }
   }
 `;
@@ -57,9 +68,21 @@ export const UPDATE_USER = gql`
 `;
 
 const Users = () => {
-  const { data, loading, refetch } = useQuery(GET_USERS);
+  const { data, loading } = useQuery(GET_USERS);
   const [deleteUser, { loadingDelete }] = useMutation(DELETE_USER, {
     refetchQueries: [{ query: GET_USERS }]
+  });
+  useSubscription(LISTENER_USERS, {
+    onSubscriptionData: ({ client, subscriptionData }) => {
+      showMessage({
+        message: 'Lista de usuários atualizada',
+        type: 'success'
+      });
+      client.writeQuery({
+        query: GET_USERS,
+        data: { users: subscriptionData.data.newUser }
+      });
+    }
   });
 
   handleDeleteItem = id => {
