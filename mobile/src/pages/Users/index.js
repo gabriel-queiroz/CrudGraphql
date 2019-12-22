@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import {
   Container,
   Loading,
@@ -9,12 +9,13 @@ import {
   Title,
   HeaderList,
   StatusBar
-} from './styles';
-import gql from 'graphql-tag';
-import { useQuery, useMutation, useSubscription } from 'react-apollo-hooks';
-import ListItem from './ListItem';
-import { push } from '~/services/navigationService';
-import { showMessage } from 'react-native-flash-message';
+} from "./styles";
+import gql from "graphql-tag";
+import { useQuery, useMutation, useSubscription } from "react-apollo-hooks";
+import { compose, graphql } from "react-apollo";
+import ListItem from "./ListItem";
+import { push } from "~/services/navigationService";
+import { showMessage } from "react-native-flash-message";
 
 export const GET_USERS = gql`
   {
@@ -68,6 +69,11 @@ export const UPDATE_USER = gql`
 `;
 
 const Users = () => {
+  const compose = compose(
+    graphql(GET_USERS, { name: "users" }),
+    graphql(GET_USERS, { name: "users2" })
+  );
+
   const { data, loading, refetch } = useQuery(GET_USERS);
   const [deleteUser, { loadingDelete }] = useMutation(DELETE_USER, {
     refetchQueries: [{ query: GET_USERS }]
@@ -75,8 +81,8 @@ const Users = () => {
   useSubscription(LISTENER_USERS, {
     onSubscriptionData: ({ client, subscriptionData }) => {
       showMessage({
-        message: 'Lista de usuários atualizada',
-        type: 'success'
+        message: "Lista de usuários atualizada",
+        type: "success"
       });
       client.writeQuery({
         query: GET_USERS,
@@ -89,14 +95,14 @@ const Users = () => {
     try {
       deleteUser({ variables: { id } });
       showMessage({
-        message: 'Usuário deletado com sucesso',
-        type: 'success'
+        message: "Usuário deletado com sucesso",
+        type: "success"
       });
     } catch (error) {}
   };
 
   handleEditItem = user => {
-    push('newUser', { user: { ...user, editing: true } });
+    push("newUser", { user: { ...user, editing: true } });
   };
 
   const renderItem = ({ item }) => (
@@ -128,7 +134,7 @@ const Users = () => {
         renderItem={renderItem}
       />
 
-      <Button onPress={() => push('newUser')}>
+      <Button onPress={() => push("newUser")}>
         <ButtonText>Adicionar usuário</ButtonText>
       </Button>
       <StatusBar />
