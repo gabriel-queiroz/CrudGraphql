@@ -12,7 +12,7 @@ import {
 } from "./styles";
 import gql from "graphql-tag";
 import { useQuery, useMutation, useSubscription } from "react-apollo-hooks";
-import { compose, graphql } from "react-apollo";
+import { graphql } from "react-apollo";
 import ListItem from "./ListItem";
 import { push } from "~/services/navigationService";
 import { showMessage } from "react-native-flash-message";
@@ -69,11 +69,6 @@ export const UPDATE_USER = gql`
 `;
 
 const Users = () => {
-  const compose = compose(
-    graphql(GET_USERS, { name: "users" }),
-    graphql(GET_USERS, { name: "users2" })
-  );
-
   const { data, loading, refetch } = useQuery(GET_USERS);
   const [deleteUser, { loadingDelete }] = useMutation(DELETE_USER, {
     refetchQueries: [{ query: GET_USERS }]
@@ -91,7 +86,7 @@ const Users = () => {
     }
   });
 
-  handleDeleteItem = id => {
+  const handleDeleteItem = id => {
     try {
       deleteUser({ variables: { id } });
       showMessage({
@@ -101,7 +96,7 @@ const Users = () => {
     } catch (error) {}
   };
 
-  handleEditItem = user => {
+  const handleEditItem = user => {
     push("newUser", { user: { ...user, editing: true } });
   };
 
